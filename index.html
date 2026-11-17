@@ -44,7 +44,7 @@
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
   .card ul { margin: 8px 0 0; padding-left: 20px; }
   .card li { margin-bottom: 4px; }
-  .photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 14px 0 4px; }
+  .photos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 14px 0 4px; align-items: start; }
   .photo {
     aspect-ratio: 3 / 2;
     border-radius: 8px;
@@ -52,9 +52,12 @@
     background: var(--bg);
     display: flex; align-items: center; justify-content: center;
     color: var(--muted); font-size: .85rem; text-align: center; padding: 8px;
-    overflow: hidden; position: relative;
+    overflow: hidden;
   }
-  .photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  /* Once a real photo loads, drop the placeholder box and show the photo at its natural shape (no cropping). */
+  .photo.loaded { aspect-ratio: auto; border: 0; padding: 0; display: block; background: none; }
+  .photo.loaded span { display: none; }
+  .photo img { display: block; width: 100%; height: auto; border-radius: 8px; }
   .skills { display: grid; gap: 8px; }
   .skills p { margin: 0; }
   .skills strong { color: var(--accent); }
@@ -68,7 +71,6 @@
     <h1>John Mammoser IV</h1>
     <p class="tagline">Computer Engineering student at CU Boulder</p>
     <div class="links">
-      <!-- REPLACE the LinkedIn link below with your real profile URL -->
       <a href="https://www.linkedin.com/in/john-mammoser">LinkedIn</a>
       <a href="mailto:jivgym@gmail.com">Email</a>
     </div>
@@ -99,9 +101,9 @@
       <!-- PHOTOS: put your image files in the "images" folder, then make sure the names below match.
            Add more photos by copying one of the <div class="photo"> blocks. -->
       <div class="photos">
-        <div class="photo">Photo: finished controller<img src="images/gamegrid-1.jpg" alt="GameGrid controller" onerror="this.remove()"></div>
-        <div class="photo">Photo: PCB design<img src="images/gamegrid-2.jpg" alt="GameGrid PCB layout" onerror="this.remove()"></div>
-        <div class="photo">Photo: display and case<img src="images/gamegrid-3.jpg" alt="GameGrid display and case" onerror="this.remove()"></div>
+        <div class="photo"><span>Photo: finished controller</span><img src="images/gamegrid-1.jpg" alt="GameGrid controller" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
+        <div class="photo"><span>Photo: PCB design</span><img src="images/gamegrid-2.jpg" alt="GameGrid PCB layout" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
+        <div class="photo"><span>Photo: display and case</span><img src="images/gamegrid-3.jpg" alt="GameGrid display and case" onload="this.parentNode.classList.add('loaded')" onerror="this.remove()"></div>
       </div>
     </div>
   </section>
@@ -178,6 +180,13 @@
     John Mammoser IV &middot; <a href="mailto:jivgym@gmail.com" style="color:inherit">jivgym@gmail.com</a>
   </div>
 </footer>
+
+<script>
+  // Covers photos that finish loading before the onload handler is attached (e.g. cached images).
+  document.querySelectorAll('.photo img').forEach(function (img) {
+    if (img.complete && img.naturalWidth > 0) img.parentNode.classList.add('loaded');
+  });
+</script>
 
 </body>
 </html>
